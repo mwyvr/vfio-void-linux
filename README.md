@@ -10,8 +10,8 @@ My relevant hardware from `dmesg`, `free -h` and `lspci -nnv`:
     * Mem: 62Gi
     * Host GPU: Radeon RX 5600 OEM/5600 XT / 5700/5700 XT
     * Guest GPU: GeForce GTX 1660 SUPER
-    * Host SSD: Phison Electronics Corporation E16 PCIe4 NVMe
-    * Guest SSD: Phison Electronics Corporation E16 PCIe4 NVMe
+    * Host SSD: Sabrent Rocket 1TB (Phison Electronics Corporation E16 PCIe4 NVMe)
+    * Guest SSD: Sabrent Rocket 1TB (Phison Electronics Corporation E16 PCIe4 NVMe)
 
 ## Starting the guest vm (Win 11)
 
