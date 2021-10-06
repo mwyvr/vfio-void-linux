@@ -1,2 +1,2 @@
 # vfio
-My libvirt config, Pop OS host, Windows 11 guest OS
+My libvirt config, Pop OS (Ubuntu/Debian derived) host, Windows 11 guest OS
