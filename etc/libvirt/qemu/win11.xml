@@ -10,7 +10,7 @@ or other application using the libvirt API.
   <uuid>018deda6-5dc2-419a-b2ca-804470116f46</uuid>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
-      <libosinfo:os id="http://microsoft.com/win/13"/>
+      <libosinfo:os id="http://microsoft.com/win/11"/>
     </libosinfo:libosinfo>
   </metadata>
   <memory unit='KiB'>30720000</memory>
