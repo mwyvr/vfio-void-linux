@@ -6,7 +6,7 @@ if [ $XDG_SESSION_TYPE != "tty" ]; then
 else
 	DEFAULT_TARGET=`systemctl get-default`
 	# In my case, gdm; Will likely state "graphical.target"
-	echo Stopping $DEFAULT_TARGET
+	echo Stopping $DEFAULT_TARGET, run level multi-user.target
 	sudo systemctl isolate multi-user.target
 	echo Starting win11 vm
 	virsh start win11

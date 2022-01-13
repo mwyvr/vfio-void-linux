@@ -53,7 +53,41 @@ work for you:
     cd /etc/libvirt
     sudo ln -s ~/libvirt-win/etc/libvirt/hooks .
 
-Tune as required.
+Tune as required. You end up with a tree structure that looks like this:
+
+     |-hooks
+       |---qemu.d
+       |-----win11          - vm definition
+       |-------prepare
+       |---------begin      i               - alloc resources for the guest vm
+                    alloc_hugepages.sh 
+                    bind_vfio.sh
+                    cpu_mode_performance.sh
+       |-------started                      - occurs after the vm has successfully started up
+       |---------begin
+                    free_guest_monitor.sh
+       |-------release
+       |---------end
+                    cpu_mode_ondemand.sh    - these give resources back to the linux host
+                    dealloc_hugepages.sh  
+                    unbind_vfio.sh
+       |-------stopped
+                    take_back_monitor.sh
+       |---------end
+       |-qemu                               - master script libvirt calls
+
+
+It's important that commands within your hook scripts:
+
+a) run as the appropriate user; I've used `runuser`.
+
+b) don't fail with an error; this will cause startup to halt and the release
+scripts to be called. You'll see some tests in the scripts to avoid simple
+failures like "killall somethingnotrunning".
+
+*Testing tip*: you can run your hook scripts one by one from the command line in this manner:
+
+    /etc/libvirt/hooks/qemu win11 start begin
 
 ## Define your win11 guest
 

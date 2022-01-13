@@ -1,35 +1,14 @@
-#!/bin/bash
-
-## Load the config file
+#!/bin/sh
 source /etc/libvirt/hooks/kvm.conf
-echo conf loaded
 
-## Load vfio
-echo modprobe vfio
-modprobe vfio
-echo modprobe vfio_iommu_type1
-modprobe vfio_iommu_type1
-echo modprobe vfio_pci
-modprobe vfio_pci
+# Note: NVIDIA GPU is bound to vfio at boot for GPU passthrough; An AMD Radeon
+# card serves the linix host, driving both monitors when a VM is not running.
+# See started | end for script that shuts off that feed.
 
-# unload nvidia
-modprobe -r nvidia-drm
-modprobe -r nvidia
+# one of two nics; Intel stays with host
+virsh nodedev-detach $VIRSH_REALTEK_NIC
 
-## Unbind gpu and bind to vfio
-echo virsh nodedev-detach $VIRSH_GPU_VIDEO
-virsh nodedev-detach $VIRSH_GPU_VIDEO
-echo virsh nodedev-detach $VIRSH_GPU_AUDIO
-virsh nodedev-detach $VIRSH_GPU_AUDIO
-echo virsh nodedev-detach $VIRSH_GPU_USB
-virsh nodedev-detach $VIRSH_GPU_USB
-echo virsh nodedev-detach $VIRSH_GPU_SERIAL
-virsh nodedev-detach $VIRSH_GPU_SERIAL
-
-## Unbind ssd from nvme and bind to vfio
-# echo virsh nodedev-detach $VIRSH_NVME_SSD
-# virsh nodedev-detach $VIRSH_NVME_SSD
-# one of two nics
-#echo virsh nodedev-detach $VIRSH_REALTEK_NIC
-#virsh nodedev-detach $VIRSH_REALTEK_NIC
+# This drive is dedicated to a Windows install and could boot from it directly.
+# Passing through the nvme, as with GPUs, performs *much* better.
+virsh nodedev-detach $VIRSH_NVME_SSD
 
