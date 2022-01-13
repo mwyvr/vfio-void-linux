@@ -1,0 +1,2 @@
+#!/bin/sh
+virsh shutdown win11
