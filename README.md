@@ -139,14 +139,6 @@ IMO it's helpful to create a test vm or two first, before diving in deep with
 PCI passthrough and libvirt hook scripts. Perhaps create a throwaway vm using
 the gui `virt-manager`.
 
-
-Becoming familiar with `pci` and GPU passthrough, if this is new to you. There
-are a number of blogs and articles out there to guide users of Debian based
-systems.
-
-* https://passthroughpo.st/gpu-debian/ and other pages therein.
-* [Creating a Windows 10 VM on the AMD Ryzen...](https://www.heiko-sieger.info/creating-a-windows-10-vm-on-the-amd-ryzen-9-3900x-using-qemu-4-0-and-vga-passthrough/)
-
 TBH I found setting this up on a new Arch system was the easiest and cleanest;
 I'm not sure that's so much an Arch thing as it was I'd been through this before
 on Debian and had a better understanding of how things hung together now.
@@ -159,3 +151,6 @@ the end:
 * [libvirt hooks](https://libvirt.org/hooks.html) documentation.
 * From my Debian days, guides from [Heiko Sieger](https://www.heiko-sieger.info/running-windows-10-on-linux-using-kvm-with-vga-passthrough/)
   and [Bryan Steiner](https://github.com/bryansteiner/gpu-passthrough-tutorial).
+
+Much of what needs to be done will be similar on any system, with the main differences
+being how to pass blacklist or vfio bind instructions to the system at bot time.
