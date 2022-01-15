@@ -1,5 +1,5 @@
 # libvirt-win
-My libvirt / qemu config for a Linux host, Win 11 guest, with some possibly helpful libvirt hook scripts.
+My libvirt / qemu config for a Linux host, Windows 11 guest, with some possibly helpful libvirt hook scripts.
 
 ## tl;dr
 
@@ -9,9 +9,10 @@ some games (very rarely), in the vm.
 
 ## Hardware Config
 
-    * Board: Gigabyte X570 AORUS MASTER, BIOS F35b 09/06/2021; Intel and Realtek NICs on the motherboard
+    * Board: Gigabyte X570 AORUS MASTER, BIOS F35b 09/06/2021
+    * Intel (for host) and Realtek NICs
     * CPU: AMD Ryzen 7 3800X 8-Core Processor
-    * Mem: 62Gi
+    * Mem: 62GB (32GB allocated dynamically to VM as hugepages)
     * Host GPU: Radeon RX 5600 OEM/5600 XT / 5700/5700 XT
     * Guest GPU: GeForce GTX 1660 SUPER
     * Host SSD: Sabrent Rocket 1TB (Phison Electronics Corporation E16 PCIe4 NVMe)
@@ -36,13 +37,25 @@ require using hot keys - just move your mouse across your virtual screen that
 you define with a few drag and drop operations. A `barrierc` client runs on my
 laptop and the Windows VM while my Arch desktop runs the `barriers` daemon.
 
-A snippet from the libvirt hook script:
+A snippet from the libvirt hook "started begin" [script](https://github.com/solutionroute/libvirt-win/blob/main/etc/libvirt/hooks/qemu.d/win11/started/begin/free_guest_monitor.sh):
+
+   if test -n "`pidof barriers`"; then killall -9 barriers; fi
+
+   # As user, start barrier keyboard and mouse sharing daemon; client installed on VM
+   runuser $RUNAS -c "DISPLAY=$HOST_DISPLAY /usr/bin/barriers --no-tray --address $HOST_IP:24800 \
+      --name $HOST_NAME --disable-crypto --disable-client-cert-checking \
+      -c /home/$RUNAS/.config/barrier/barrier.conf"
+
+## Audio
+
+Via `pulseaudio` - see the bottom of the VM definition in `win11.xml` for the relevant
+mods, and you'll likely need to check the VM is starting up as you/user 1000 or what have
+you, rather than root. 
 
 ## Drop in use of my hooks
 
-I've tried to generalize my setup with a few variables in `kvm.conf`; If you
-have not already implemented your own libvirt hooks, the drop in method may
-work for you:
+I've generalized my setup with a few variables in `kvm.conf`; you may find dropping these in
+may work for you with just a little tweaking.
 
     # clone this repo, somewhere
     cd ~
@@ -56,10 +69,11 @@ work for you:
 Tune as required. You end up with a tree structure that looks like this:
 
      |-hooks
+       |---kvm.conf                         - customization variables
        |---qemu.d
-       |-----win11          - vm definition
+       |-----win11                          - vm definition
        |-------prepare
-       |---------begin      i               - alloc resources for the guest vm
+       |---------begin                      - alloc resources for the guest vm
                     alloc_hugepages.sh 
                     bind_vfio.sh
                     cpu_mode_performance.sh
@@ -134,7 +148,8 @@ systems.
 * [Creating a Windows 10 VM on the AMD Ryzen...](https://www.heiko-sieger.info/creating-a-windows-10-vm-on-the-amd-ryzen-9-3900x-using-qemu-4-0-and-vga-passthrough/)
 
 TBH I found setting this up on a new Arch system was the easiest and cleanest;
-but I'd had a working system on Debian before. 
+I'm not sure that's so much an Arch thing as it was I'd been through this before
+on Debian and had a better understanding of how things hung together now.
 
 Like many things Linux, Arch documentation comes up often in searches online
 and for good reason. This essential reading that can take you all the way to
@@ -142,3 +157,5 @@ the end:
 
 * The Arch wiki, of course. [PCI passthrough via OVMF](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF)
 * [libvirt hooks](https://libvirt.org/hooks.html) documentation.
+* From my Debian days, guides from [Heiko Sieger](https://www.heiko-sieger.info/running-windows-10-on-linux-using-kvm-with-vga-passthrough/)
+  and [Bryan Steiner](https://github.com/bryansteiner/gpu-passthrough-tutorial).
