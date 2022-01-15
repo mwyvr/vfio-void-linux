@@ -3,7 +3,7 @@ source /etc/libvirt/hooks/kvm.conf
 
 # Passing through the DISPLAY variable in this way to be consistent, as it's
 # not in the runuser environment needed for some commands.
-DISPLAY=$HOST_DISPLAY xrandr --output $GUEST_MONITOR --off
+runuser $RUNAS -c "DISPLAY=$HOST_DISPLAY xrandr --output $GUEST_MONITOR --off"
 
 # Once vm started, monitor will autosense feed coming from dedicated NVIDIA gpu
 
