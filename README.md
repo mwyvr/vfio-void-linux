@@ -39,10 +39,10 @@ laptop and the Windows VM while my Arch desktop runs the `barriers` daemon.
 
 A snippet from the libvirt hook "started begin" [script](https://github.com/solutionroute/libvirt-win/blob/main/etc/libvirt/hooks/qemu.d/win11/started/begin/free_guest_monitor.sh):
 
-   if test -n "`pidof barriers`"; then killall -9 barriers; fi
+    if test -n "`pidof barriers`"; then killall -9 barriers; fi
 
-   # As user, start barrier keyboard and mouse sharing daemon; client installed on VM
-   runuser $RUNAS -c "DISPLAY=$HOST_DISPLAY /usr/bin/barriers --no-tray --address $HOST_IP:24800 \
+    # As user, start barrier keyboard and mouse sharing daemon; client installed on VM
+    runuser $RUNAS -c "DISPLAY=$HOST_DISPLAY /usr/bin/barriers --no-tray --address $HOST_IP:24800 \
       --name $HOST_NAME --disable-crypto --disable-client-cert-checking \
       -c /home/$RUNAS/.config/barrier/barrier.conf"
 
