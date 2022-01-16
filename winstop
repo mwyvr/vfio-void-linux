@@ -1,2 +1,2 @@
 #!/bin/sh
-virsh shutdown win11
+virsh shutdown win11 --mode=acpi
