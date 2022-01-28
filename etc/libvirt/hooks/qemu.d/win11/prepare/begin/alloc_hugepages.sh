@@ -1,6 +1,6 @@
 #!/bin/sh
 # See win11.xml for the matching value sourced from:
-source /etc/libvirt/hooks/kvm.conf
+. /etc/libvirt/hooks/kvm.conf
 
 # Calculate number of hugepages to allocate from memory (in MB)
 HUGEPAGES="$(($GUEST_RAM/$(($(grep Hugepagesize /proc/meminfo | awk '{print $2}')/1024))))"

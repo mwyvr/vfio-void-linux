@@ -1,7 +1,7 @@
 #!/bin/sh
-source /etc/libvirt/hooks/kvm.conf
+. /etc/libvirt/hooks/kvm.conf
 
-## Enable CPU governor on-demand mode
+## Return CPU governor to "schedutil"; standard in Arch and Void at least
 for file in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; 
 do 
 	echo "schedutil" > $file; 
