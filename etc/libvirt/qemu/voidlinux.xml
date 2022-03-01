@@ -7,34 +7,18 @@ or other application using the libvirt API.
 
 <domain type='kvm'>
   <name>voidlinux</name>
-  <uuid>481ea2d7-597d-411b-bf93-21981bceffd5</uuid>
+  <uuid>34c6e086-96d7-43f5-b292-05dda3c62092</uuid>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
       <libosinfo:os id="http://voidlinux.org/voidlinux/rolling"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit='KiB'>30720000</memory>
-  <currentMemory unit='KiB'>30720000</currentMemory>
-  <memoryBacking>
-    <hugepages/>
-  </memoryBacking>
+  <memory unit='KiB'>6144000</memory>
+  <currentMemory unit='KiB'>6144000</currentMemory>
   <vcpu placement='static'>8</vcpu>
-  <cputune>
-    <vcpupin vcpu='0' cpuset='4'/>
-    <vcpupin vcpu='1' cpuset='12'/>
-    <vcpupin vcpu='2' cpuset='5'/>
-    <vcpupin vcpu='3' cpuset='13'/>
-    <vcpupin vcpu='4' cpuset='6'/>
-    <vcpupin vcpu='5' cpuset='14'/>
-    <vcpupin vcpu='6' cpuset='7'/>
-    <vcpupin vcpu='7' cpuset='15'/>
-    <emulatorpin cpuset='0-3'/>
-  </cputune>
   <os>
-    <type arch='x86_64' machine='pc-q35-6.2'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/edk2-ovmf/x64/OVMF_CODE.fd</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/voidlinux_VARS.fd</nvram>
-    <boot dev='hd'/>
+    <type arch='x86_64' machine='pc-q35-6.1'>hvm</type>
+    <bootmenu enable='yes'/>
   </os>
   <features>
     <acpi/>
@@ -42,8 +26,7 @@ or other application using the libvirt API.
     <vmport state='off'/>
   </features>
   <cpu mode='host-passthrough' check='none' migratable='on'>
-    <topology sockets='1' dies='1' cores='4' threads='2'/>
-    <feature policy='require' name='topoext'/>
+    <topology sockets='1' dies='1' cores='2' threads='4'/>
   </cpu>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
@@ -63,12 +46,15 @@ or other application using the libvirt API.
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/voidlinux.qcow2'/>
       <target dev='vda' bus='virtio'/>
+      <boot order='1'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/void-live-x86_64-20210930-xfce.iso'/>
       <target dev='sda' bus='sata'/>
       <readonly/>
+      <boot order='2'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
@@ -128,6 +114,11 @@ or other application using the libvirt API.
       <target chassis='10' port='0x19'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x1'/>
     </controller>
+    <controller type='pci' index='11' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='11' port='0x1a'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x2'/>
+    </controller>
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
@@ -138,9 +129,6 @@ or other application using the libvirt API.
     </serial>
     <console type='pty'>
       <target type='serial' port='0'/>
-    </console>
-    <console type='pty'>
-      <target type='virtio' port='1'/>
     </console>
     <channel type='unix'>
       <target type='virtio' name='org.qemu.guest_agent.0'/>
@@ -158,7 +146,11 @@ or other application using the libvirt API.
     <graphics type='spice' autoport='yes'>
       <listen type='address'/>
       <image compression='off'/>
+      <gl enable='no'/>
     </graphics>
+    <sound model='ich9'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
+    </sound>
     <audio id='1' type='spice'/>
     <video>
       <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
@@ -171,30 +163,28 @@ or other application using the libvirt API.
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='yes'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0000' bus='0x0e' slot='0x00' function='0x0'/>
       </source>
-      <rom file='/var/lib/libvirt/images/gtx1660super.rom'/>
-      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x0e' slot='0x00' function='0x1'/>
       </source>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x0e' slot='0x00' function='0x2'/>
       </source>
-      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x0e' slot='0x00' function='0x3'/>
       </source>
-      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </hostdev>
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='2'/>
@@ -202,10 +192,12 @@ or other application using the libvirt API.
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='3'/>
     </redirdev>
-    <memballoon model='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
+    </memballoon>
     <rng model='virtio'>
       <backend model='random'>/dev/urandom</backend>
-      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
     </rng>
   </devices>
 </domain>
