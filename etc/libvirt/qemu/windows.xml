@@ -5,30 +5,19 @@ OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:
 or other application using the libvirt API.
 -->
 
-<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+<domain type='kvm'>
   <name>windows</name>
-  <uuid>ee8965b3-4269-4a84-85bc-b19d728608e9</uuid>
+  <uuid>a0a29705-aaaf-4566-803e-2fec8b60362a</uuid>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
-      <libosinfo:os id="http://microsoft.com/win/10"/>
+      <libosinfo:os id="http://microsoft.com/win/11"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit='KiB'>20480000</memory>
-  <currentMemory unit='KiB'>20480000</currentMemory>
+  <memory unit='KiB'>24576000</memory>
+  <currentMemory unit='KiB'>24576000</currentMemory>
   <vcpu placement='static'>8</vcpu>
-  <cputune>
-    <vcpupin vcpu='0' cpuset='4'/>
-    <vcpupin vcpu='1' cpuset='12'/>
-    <vcpupin vcpu='2' cpuset='5'/>
-    <vcpupin vcpu='3' cpuset='13'/>
-    <vcpupin vcpu='4' cpuset='6'/>
-    <vcpupin vcpu='5' cpuset='14'/>
-    <vcpupin vcpu='6' cpuset='7'/>
-    <vcpupin vcpu='7' cpuset='15'/>
-    <emulatorpin cpuset='1,9'/>
-  </cputune>
   <os>
-    <type arch='x86_64' machine='pc-q35-6.1'>hvm</type>
+    <type arch='x86_64' machine='pc-q35-6.2'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/qemu/edk2-x86_64-secure-code.fd</loader>
     <nvram>/var/lib/libvirt/qemu/nvram/windows_VARS.fd</nvram>
   </os>
@@ -39,16 +28,11 @@ or other application using the libvirt API.
       <relaxed state='on'/>
       <vapic state='on'/>
       <spinlocks state='on' retries='8191'/>
-      <vpindex state='on'/>
-      <synic state='on'/>
-      <stimer state='on'/>
-      <frequencies state='on'/>
     </hyperv>
     <vmport state='off'/>
   </features>
-  <cpu mode='host-passthrough' check='partial' migratable='on'>
-    <topology sockets='1' dies='1' cores='4' threads='2'/>
-    <cache mode='passthrough'/>
+  <cpu mode='host-passthrough' check='none' migratable='on'>
+    <topology sockets='1' dies='1' cores='2' threads='4'/>
   </cpu>
   <clock offset='localtime'>
     <timer name='rtc' tickpolicy='catchup'/>
@@ -66,10 +50,7 @@ or other application using the libvirt API.
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
-    </controller>
-    <controller type='sata' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
     <controller type='pci' index='0' model='pcie-root'/>
     <controller type='pci' index='1' model='pcie-root-port'>
@@ -124,9 +105,36 @@ or other application using the libvirt API.
     </controller>
     <controller type='pci' index='11' model='pcie-root-port'>
       <model name='pcie-root-port'/>
-      <target chassis='11' port='0x8'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      <target chassis='11' port='0x1a'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x2'/>
     </controller>
+    <controller type='pci' index='12' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='12' port='0x1b'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x3'/>
+    </controller>
+    <controller type='pci' index='13' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='13' port='0x1c'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x4'/>
+    </controller>
+    <controller type='pci' index='14' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='14' port='0x1d'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x5'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </controller>
+    <interface type='network'>
+      <mac address='52:54:00:b6:39:17'/>
+      <source network='default'/>
+      <model type='e1000e'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </interface>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
         <model name='isa-serial'/>
@@ -135,70 +143,33 @@ or other application using the libvirt API.
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
+    <channel type='spicevmc'>
+      <target type='virtio' name='com.redhat.spice.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
     <input type='tablet' bus='usb'>
       <address type='usb' bus='0' port='1'/>
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <input type='mouse' bus='virtio'>
-      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
-    </input>
-    <input type='keyboard' bus='virtio'>
-      <address type='pci' domain='0x0000' bus='0x0b' slot='0x00' function='0x0'/>
-    </input>
-    <input type='evdev'>
-      <source dev='/dev/input/by-id/usb-Razer_Razer_DeathAdder_V2-event-mouse'/>
-    </input>
-    <input type='evdev'>
-      <source dev='/dev/input/by-id/usb-_Varmilo-event-kbd' grab='all' repeat='on'/>
-    </input>
-    <tpm model='tpm-crb'>
-      <backend type='emulator' version='2.0'/>
-    </tpm>
-    <audio id='1' type='none'/>
+    <graphics type='spice' autoport='yes'>
+      <listen type='address'/>
+      <image compression='off'/>
+    </graphics>
+    <sound model='ich9'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
+    </sound>
+    <audio id='1' type='spice'/>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </video>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
       </source>
       <boot order='1'/>
-      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
-      </source>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x0'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x1'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x2'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x3'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='usb' managed='yes'>
-      <source>
-        <vendor id='0x046d'/>
-        <product id='0x085e'/>
-      </source>
-      <address type='usb' bus='0' port='5'/>
     </hostdev>
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='2'/>
@@ -206,17 +177,8 @@ or other application using the libvirt API.
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='3'/>
     </redirdev>
-    <redirdev bus='usb' type='spicevmc'>
-      <address type='usb' bus='0' port='4'/>
-    </redirdev>
-    <memballoon model='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+    </memballoon>
   </devices>
-  <qemu:commandline>
-    <qemu:arg value='-device'/>
-    <qemu:arg value='ich9-intel-hda,bus=pcie.0,addr=0x1b'/>
-    <qemu:arg value='-device'/>
-    <qemu:arg value='hda-micro,audiodev=hda'/>
-    <qemu:arg value='-audiodev'/>
-    <qemu:arg value='pa,id=hda,server=/run/user/1000/pulse/native'/>
-  </qemu:commandline>
 </domain>
