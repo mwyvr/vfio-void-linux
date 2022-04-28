@@ -1,5 +1,6 @@
 # libvirt-win
-My libvirt / qemu config for a Linux host, Windows 11 guest, with some possibly helpful libvirt hook scripts.
+My kvm / vfio / libvirt / qemu config for a Void Linux host, Windows 11 guest (and other Linux guests),
+with some possibly helpful libvirt hook scripts.
 
 ## tl;dr
 

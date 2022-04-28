@@ -5,7 +5,7 @@ OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:
 or other application using the libvirt API.
 -->
 
-<domain type='kvm'>
+<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
   <name>windows</name>
   <uuid>a0a29705-aaaf-4566-803e-2fec8b60362a</uuid>
   <metadata>
@@ -16,6 +16,17 @@ or other application using the libvirt API.
   <memory unit='KiB'>24576000</memory>
   <currentMemory unit='KiB'>24576000</currentMemory>
   <vcpu placement='static'>8</vcpu>
+  <cputune>
+    <vcpupin vcpu='0' cpuset='4'/>
+    <vcpupin vcpu='1' cpuset='12'/>
+    <vcpupin vcpu='2' cpuset='5'/>
+    <vcpupin vcpu='3' cpuset='13'/>
+    <vcpupin vcpu='4' cpuset='6'/>
+    <vcpupin vcpu='5' cpuset='14'/>
+    <vcpupin vcpu='6' cpuset='7'/>
+    <vcpupin vcpu='7' cpuset='15'/>
+    <emulatorpin cpuset='1,9'/>
+  </cputune>
   <os>
     <type arch='x86_64' machine='pc-q35-6.2'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/qemu/edk2-x86_64-secure-code.fd</loader>
@@ -31,8 +42,10 @@ or other application using the libvirt API.
     </hyperv>
     <vmport state='off'/>
   </features>
-  <cpu mode='host-passthrough' check='none' migratable='on'>
+  <cpu mode='host-passthrough' check='partial' migratable='on'>
     <topology sockets='1' dies='1' cores='2' threads='4'/>
+    <cache mode='passthrough'/>
+    <feature policy='require' name='topoext'/>
   </cpu>
   <clock offset='localtime'>
     <timer name='rtc' tickpolicy='catchup'/>
@@ -129,12 +142,6 @@ or other application using the libvirt API.
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </controller>
-    <interface type='network'>
-      <mac address='52:54:00:b6:39:17'/>
-      <source network='default'/>
-      <model type='e1000e'/>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
-    </interface>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
         <model name='isa-serial'/>
@@ -143,27 +150,17 @@ or other application using the libvirt API.
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
-    <channel type='spicevmc'>
-      <target type='virtio' name='com.redhat.spice.0'/>
-      <address type='virtio-serial' controller='0' bus='0' port='1'/>
-    </channel>
     <input type='tablet' bus='usb'>
       <address type='usb' bus='0' port='1'/>
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <graphics type='spice' autoport='yes'>
-      <listen type='address'/>
-      <image compression='off'/>
-    </graphics>
-    <sound model='ich9'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
-    </sound>
+    <tpm model='tpm-tis'>
+      <backend type='passthrough'>
+        <device path='/dev/tpm0'/>
+      </backend>
+    </tpm>
     <audio id='1' type='spice'/>
-    <video>
-      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
-    </video>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
@@ -171,14 +168,55 @@ or other application using the libvirt API.
       <boot order='1'/>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x1'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x2'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x0000' bus='0x0e' slot='0x00' function='0x3'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
+    </hostdev>
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='2'/>
     </redirdev>
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='3'/>
     </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='4'/>
+    </redirdev>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </memballoon>
   </devices>
+  <qemu:commandline>
+    <qemu:arg value='-device'/>
+    <qemu:arg value='ich9-intel-hda,bus=pcie.0,addr=0x1b'/>
+    <qemu:arg value='-device'/>
+    <qemu:arg value='hda-micro,audiodev=hda'/>
+    <qemu:arg value='-audiodev'/>
+    <qemu:arg value='pa,id=hda,server=/run/user/1000/pulse/native'/>
+  </qemu:commandline>
 </domain>
